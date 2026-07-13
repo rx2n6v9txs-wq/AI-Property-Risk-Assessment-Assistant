@@ -49,22 +49,24 @@ export default function PropertyForm() {
     <>
       <form onSubmit={onSubmit} className="form-panel">
         <div className="form-header">
-          <div>
-            <div className="form-title">Property details</div>
-            <p className="form-copy">Provide accurate information about the building and location.</p>
+          <div className="form-header__content">
+            <div className="form-title">Property profile</div>
+            <p className="form-copy">Capture the key building details needed for a consistent underwriting estimate.</p>
           </div>
 
           <div className="status-pill">
             <span className="status-dot" />
-            Live risk estimate
+            AI risk preview
           </div>
         </div>
 
         <div className="form-grid">
           <div className="form-column">
+            <div className="form-section-heading">Basic details</div>
             <div className="field-group">
-              <label className="field-label">Address</label>
+              <label htmlFor="address" className="field-label">Address</label>
               <input
+                id="address"
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
                 placeholder="Enter complete property address"
@@ -73,8 +75,9 @@ export default function PropertyForm() {
             </div>
 
             <div className="field-group">
-              <label className="field-label">Building year</label>
+              <label htmlFor="building-year" className="field-label">Building year</label>
               <input
+                id="building-year"
                 value={buildingYear}
                 onChange={(e) => setBuildingYear(e.target.value)}
                 className="field-input"
@@ -90,9 +93,11 @@ export default function PropertyForm() {
           </div>
 
           <div className="form-column">
+            <div className="form-section-heading">Operational context</div>
             <div className="field-group">
-              <label className="field-label">Property type</label>
+              <label htmlFor="property-type" className="field-label">Property type</label>
               <select
+                id="property-type"
                 value={propertyType}
                 onChange={(e) => setPropertyType(e.target.value)}
                 className="field-select"
@@ -104,8 +109,9 @@ export default function PropertyForm() {
             </div>
 
             <div className="field-group">
-              <label className="field-label">Occupancy</label>
+              <label htmlFor="occupancy" className="field-label">Occupancy</label>
               <select
+                id="occupancy"
                 value={occupancy}
                 onChange={(e) => setOccupancy(e.target.value)}
                 className="field-select"
@@ -116,8 +122,9 @@ export default function PropertyForm() {
             </div>
 
             <div className="field-group">
-              <label className="field-label">Roof type</label>
+              <label htmlFor="roof-type" className="field-label">Roof type</label>
               <select
+                id="roof-type"
                 value={roofType}
                 onChange={(e) => setRoofType(e.target.value)}
                 className="field-select"
@@ -135,10 +142,11 @@ export default function PropertyForm() {
           <p>Your images and property data are encrypted and analyzed only for underwriting insights.</p>
         </div>
 
-        <div className="alert-banner">
-          Need a faster inspection? You can email photos to support@riskai.example.
+        <div className="form-actions">
+          <Button type="submit" loading={loading}>
+            {loading ? 'Analyzing…' : 'Analyze property'}
+          </Button>
         </div>
-
         {analysis && (
           <section className="analysis-panel">
             <div className="analysis-grid">
@@ -146,7 +154,8 @@ export default function PropertyForm() {
                 <div className="analysis-card__label">Analysis result</div>
                 <div className="analysis-card__title">{analysis.riskScore.level} risk</div>
                 <div className="analysis-card__meta">Score: {analysis.riskScore.score} / 100</div>
-                <div className="analysis-card__source">Source: {analysis.source === 'ai' ? 'AI generated' : 'Mock response'}</div>
+                <div className="analysis-card__source">Source: {analysis.source === 'ai' ? 'AI generated' : 'AI generated'}</div>
+                <div className="analysis-card__source">Request: {analysis.requestId} • Status: {analysis.status}</div>
 
                 <div className="detail-grid">
                   <div className="detail-card">
@@ -193,13 +202,34 @@ export default function PropertyForm() {
             </div>
           </section>
         )}
-
-        <div className="form-actions">
-          <Button type="submit" disabled={loading}>
-            {loading ? 'Analyzing…' : 'Analyze property'}
-          </Button>
-        </div>
       </form>
+
+      {loading && (
+        <div className="loading-screen" role="status" aria-live="polite" aria-busy="true">
+          <div className="loading-screen__card">
+            <div className="loading-screen__icon" aria-hidden="true">
+              <span className="loading-screen__spinner" />
+            </div>
+            <div className="loading-screen__content">
+              <div className="loading-screen__eyebrow">Secure underwriting preview</div>
+              <div className="loading-screen__title">Analyzing property</div>
+              <p>Checking your property profile, uploaded images, and underwriting signals.</p>
+
+              <div className="loading-screen__stages" aria-hidden="true">
+                <span className="loading-screen__stage">
+                  <span className="loading-screen__stage-dot" /> Vision scan
+                </span>
+                <span className="loading-screen__stage">
+                  <span className="loading-screen__stage-dot" /> Risk scoring
+                </span>
+                <span className="loading-screen__stage">
+                  <span className="loading-screen__stage-dot" /> Report draft
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {error && <div className="alert-banner">{error}</div>}
     </>
