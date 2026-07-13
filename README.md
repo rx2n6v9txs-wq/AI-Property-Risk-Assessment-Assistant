@@ -140,7 +140,7 @@ VITE_API_URL=http://localhost:5000
 ```
 PORT=5000
 
-OPENAI_API_KEY=your_api_key
+GEMINI_API_KEY=your_api_key
 ```
 
 ---

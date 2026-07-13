@@ -1,5 +1,5 @@
 import { useCallback, useState, type FormEvent } from 'react'
-import type { AnalysisResponse } from '../../shared/types'
+import type { AnalysisResponse } from '../../../shared/types'
 import { submitAnalysis } from '../api'
 import UploadDropzone from './UploadDropzone'
 import Button from './Button'
@@ -146,6 +146,7 @@ export default function PropertyForm() {
                 <div className="analysis-card__label">Analysis result</div>
                 <div className="analysis-card__title">{analysis.riskScore.level} risk</div>
                 <div className="analysis-card__meta">Score: {analysis.riskScore.score} / 100</div>
+                <div className="analysis-card__source">Source: {analysis.source === 'ai' ? 'AI generated' : 'Mock response'}</div>
 
                 <div className="detail-grid">
                   <div className="detail-card">
@@ -174,7 +175,7 @@ export default function PropertyForm() {
                   <div>
                     <div className="summary-panel__label">Notes</div>
                     <ul>
-                      {analysis.report.underwritingNotes.map((note, index) => (
+                      {analysis.report.underwritingNotes.map((note: string, index: number) => (
                         <li key={index} className="summary-panel__item">{note}</li>
                       ))}
                     </ul>
@@ -182,7 +183,7 @@ export default function PropertyForm() {
                   <div>
                     <div className="summary-panel__label">Recommendations</div>
                     <ul>
-                      {analysis.report.recommendations.map((item, index) => (
+                      {analysis.report.recommendations.map((item: string, index: number) => (
                         <li key={index} className="summary-panel__item">{item}</li>
                       ))}
                     </ul>

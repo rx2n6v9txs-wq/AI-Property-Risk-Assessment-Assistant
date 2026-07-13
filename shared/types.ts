@@ -45,6 +45,7 @@ export interface Report {
 export interface AnalysisResponse {
   requestId: string
   status: string
+  source: 'ai' | 'mock'
   property: PropertyPayload
   images: ImageMetadata[]
   findings: AnalysisFindings
