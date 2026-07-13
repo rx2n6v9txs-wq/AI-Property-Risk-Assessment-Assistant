@@ -1,9 +1,11 @@
+import { Cloud, Globe2, LockKeyhole, ShieldCheck } from 'lucide-react'
+
 export default function TrustBar() {
   const items = [
-    { icon: (<svg width="16" height="16" viewBox="0 0 24 24" aria-hidden><path d="M12 2L3 5v6c0 5 3 9 9 11 6-2 9-6 9-11V5l-9-3z" fill="#4F46E5"/></svg>), title: '256-bit encryption' },
-    { icon: (<svg width="16" height="16" viewBox="0 0 24 24" aria-hidden><path d="M12 2L3 5v6c0 5 3 9 9 11 6-2 9-6 9-11V5l-9-3z" fill="#4F46E5"/></svg>), title: 'SOC 2 ready' },
-    { icon: (<svg width="16" height="16" viewBox="0 0 24 24" aria-hidden><path d="M12 2a10 10 0 100 20 10 10 0 000-20z" fill="#4F46E5"/></svg>), title: 'GDPR compliant' },
-    { icon: (<svg width="16" height="16" viewBox="0 0 24 24" aria-hidden><path d="M12 2L3 5v6c0 5 3 9 9 11 6-2 9-6 9-11V5l-9-3z" fill="#4F46E5"/></svg>), title: 'Cloud secure' },
+    { icon: <LockKeyhole size={18} strokeWidth={2} aria-hidden="true" />, title: '256-bit encryption' },
+    { icon: <ShieldCheck size={18} strokeWidth={2} aria-hidden="true" />, title: 'SOC 2 ready' },
+    { icon: <Globe2 size={18} strokeWidth={2} aria-hidden="true" />, title: 'GDPR compliant' },
+    { icon: <Cloud size={18} strokeWidth={2} aria-hidden="true" />, title: 'Cloud secure' },
   ]
 
   return (

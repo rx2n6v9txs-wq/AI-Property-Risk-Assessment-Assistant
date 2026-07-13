@@ -221,7 +221,7 @@ function tryParseJson(text: string) {
 }
 
 async function analyzeWithGemini(property: PropertyInput, files: Express.Multer.File[]) {
-  console.log('Analyzing property with Gemini:', property)
+  // console.log('Analyzing property with Gemini:', property)
   if (!ai) {
     return null
   }
@@ -306,11 +306,11 @@ Return ONLY valid JSON.
         maxOutputTokens: 1500,
         responseMimeType: 'application/json',
         thinkingConfig: {
-    thinkingBudget: 0,
+        thinkingBudget: 2,
   },
       },
     })
-    console.log('Gemini raw response:', JSON.stringify(response, null, 2))
+    // console.log('Gemini raw response:', JSON.stringify(response, null, 2))
     const textOutput = typeof response.text === 'string' ? response.text : ''
     const candidateText = response.candidates?.[0]?.content?.parts?.map((part: any) => part.text).filter(Boolean).join('\n') ?? ''
     const rawText = (textOutput || candidateText).trim()
@@ -385,7 +385,7 @@ app.post('/api/analyze', upload.fields([{ name: 'images', maxCount: MAX_IMAGE_CO
     if (ai) {
       analysisResult = await analyzeWithGemini(property, files)
     }
-console.log('Analysis result:', analysisResult)
+// console.log('Analysis result:', analysisResult)
     const findings = analysisResult?.findings ?? buildMockFindings(property)
     const riskScore = analysisResult?.riskScore ?? buildMockRiskScore(findings, property)
     const report = analysisResult?.report ?? buildMockReport(property, findings, riskScore)
