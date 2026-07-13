@@ -1,0 +1,206 @@
+import { useCallback, useState, type FormEvent } from 'react'
+import type { AnalysisResponse } from '../../shared/types'
+import { submitAnalysis } from '../api'
+import UploadDropzone from './UploadDropzone'
+import Button from './Button'
+
+export default function PropertyForm() {
+  const [address, setAddress] = useState('')
+  const [propertyType, setPropertyType] = useState('Office')
+  const [buildingYear, setBuildingYear] = useState('1998')
+  const [occupancy, setOccupancy] = useState('Occupied')
+  const [roofType, setRoofType] = useState('Flat')
+  const [files, setFiles] = useState<File[]>([])
+  const [loading, setLoading] = useState(false)
+  const [analysis, setAnalysis] = useState<AnalysisResponse | null>(null)
+  const [error, setError] = useState<string | null>(null)
+
+  const handleFiles = useCallback((nextFiles: File[]) => {
+    setFiles(nextFiles)
+  }, [])
+
+  const onSubmit = async (e: FormEvent) => {
+    e.preventDefault()
+    setLoading(true)
+    setError(null)
+
+    try {
+      const response = await submitAnalysis(
+        {
+          address,
+          propertyType,
+          buildingYear,
+          occupancy,
+          roofType,
+        },
+        files,
+      )
+
+      setAnalysis(response)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Unable to analyze property.')
+      setAnalysis(null)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <>
+      <form onSubmit={onSubmit} className="form-panel">
+        <div className="form-header">
+          <div>
+            <div className="form-title">Property details</div>
+            <p className="form-copy">Provide accurate information about the building and location.</p>
+          </div>
+
+          <div className="status-pill">
+            <span className="status-dot" />
+            Live risk estimate
+          </div>
+        </div>
+
+        <div className="form-grid">
+          <div className="form-column">
+            <div className="field-group">
+              <label className="field-label">Address</label>
+              <input
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                placeholder="Enter complete property address"
+                className="field-input"
+              />
+            </div>
+
+            <div className="field-group">
+              <label className="field-label">Building year</label>
+              <input
+                value={buildingYear}
+                onChange={(e) => setBuildingYear(e.target.value)}
+                className="field-input"
+              />
+            </div>
+
+            <div className="field-group">
+              <label className="field-label">Upload images</label>
+              <div className="upload-section">
+                <UploadDropzone onChange={handleFiles} />
+              </div>
+            </div>
+          </div>
+
+          <div className="form-column">
+            <div className="field-group">
+              <label className="field-label">Property type</label>
+              <select
+                value={propertyType}
+                onChange={(e) => setPropertyType(e.target.value)}
+                className="field-select"
+              >
+                <option>Office</option>
+                <option>Retail</option>
+                <option>Industrial</option>
+              </select>
+            </div>
+
+            <div className="field-group">
+              <label className="field-label">Occupancy</label>
+              <select
+                value={occupancy}
+                onChange={(e) => setOccupancy(e.target.value)}
+                className="field-select"
+              >
+                <option>Occupied</option>
+                <option>Vacant</option>
+              </select>
+            </div>
+
+            <div className="field-group">
+              <label className="field-label">Roof type</label>
+              <select
+                value={roofType}
+                onChange={(e) => setRoofType(e.target.value)}
+                className="field-select"
+              >
+                <option>Flat</option>
+                <option>Pitched</option>
+                <option>Metal</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div className="form-note">
+          <div className="form-note-title">Secure processing</div>
+          <p>Your images and property data are encrypted and analyzed only for underwriting insights.</p>
+        </div>
+
+        <div className="alert-banner">
+          Need a faster inspection? You can email photos to support@riskai.example.
+        </div>
+
+        {analysis && (
+          <section className="analysis-panel">
+            <div className="analysis-grid">
+              <div className="analysis-card">
+                <div className="analysis-card__label">Analysis result</div>
+                <div className="analysis-card__title">{analysis.riskScore.level} risk</div>
+                <div className="analysis-card__meta">Score: {analysis.riskScore.score} / 100</div>
+
+                <div className="detail-grid">
+                  <div className="detail-card">
+                    <div className="analysis-card__label">Roof condition</div>
+                    <p>{analysis.findings.roofCondition}</p>
+                  </div>
+                  <div className="detail-card">
+                    <div className="analysis-card__label">Water leakage</div>
+                    <p>{analysis.findings.waterLeakage}</p>
+                  </div>
+                  <div className="detail-card">
+                    <div className="analysis-card__label">Vegetation</div>
+                    <p>{analysis.findings.vegetation}</p>
+                  </div>
+                  <div className="detail-card">
+                    <div className="analysis-card__label">Parking condition</div>
+                    <p>{analysis.findings.parkingCondition}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="summary-panel">
+                <div className="summary-panel__title">Underwriting summary</div>
+                <div className="summary-panel__heading">{analysis.report.summary}</div>
+                <div className="summary-panel__list">
+                  <div>
+                    <div className="summary-panel__label">Notes</div>
+                    <ul>
+                      {analysis.report.underwritingNotes.map((note, index) => (
+                        <li key={index} className="summary-panel__item">{note}</li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div>
+                    <div className="summary-panel__label">Recommendations</div>
+                    <ul>
+                      {analysis.report.recommendations.map((item, index) => (
+                        <li key={index} className="summary-panel__item">{item}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        )}
+
+        <div className="form-actions">
+          <Button type="submit" disabled={loading}>
+            {loading ? 'Analyzing…' : 'Analyze property'}
+          </Button>
+        </div>
+      </form>
+
+      {error && <div className="alert-banner">{error}</div>}
+    </>
+  )
+}
